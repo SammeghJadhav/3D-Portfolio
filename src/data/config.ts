@@ -1,45 +1,39 @@
 const config = {
-  title: "Naresh Khatri | Full-Stack Developer",
+  title: "Sammegh Jadhav | AI/ML Engineer",
   description: {
-    long: "Explore the portfolio of Naresh, a full-stack developer and creative technologist specializing in interactive web experiences, 3D animations, and innovative projects. Discover my latest work, including Coding Ducks, The Booking Desk, Ghostchat, and more. Let's build something amazing together!",
+    long: "Driven Computer Science & Engineering major with expertise in Artificial Intelligence/Machine Learning (AI/ML). Proficient with Python, Java, and LLMs in creating intelligent solutions. Enthusiastic about applying theoretical knowledge along with practical experience in the field of software engineering or AI development.",
     short:
-      "Discover the portfolio of Naresh, a full-stack developer creating interactive web experiences and innovative projects.",
+      "Portfolio of Sammegh Jadhav, an aspiring AI/ML Engineer and Computer Science major.",
   },
   keywords: [
-    "Naresh",
+    "Sammegh",
+    "Jadhav",
     "portfolio",
-    "full-stack developer",
-    "creative technologist",
-    "web development",
-    "3D animations",
-    "interactive websites",
-    "Coding Ducks",
-    "The Booking Desk",
-    "Ghostchat",
-    "web design",
-    "GSAP",
-    "React",
-    "Next.js",
-    "Spline",
-    "Framer Motion",
+    "AI/ML Engineer",
+    "Machine Learning",
+    "Artificial Intelligence",
+    "Python",
+    "NLP",
+    "LLMs",
+    "Java",
   ],
-  author: "Naresh Khatri",
-  email: "naresh.khatri2345@gmail.com",
-  site: "https://nareshkhatri.site",
+  author: "Sammegh Jadhav",
+  email: "sammeghjadhav2210@gmail.com",
+  site: "https://github.com/SammeghJadhav",
 
   // for github stars button
-  githubUsername: "naresh-khatri",
-  githubRepo: "3d-portfolio",
+  githubUsername: "SammeghJadhav",
+  githubRepo: "https://github.com/repos?q=owner%3A%40me",
 
   get ogImg() {
     return this.site + "/assets/seo/og-image.png";
   },
   social: {
-    twitter: "https://x.com/nothotchaddi",
-    linkedin: "https://www.linkedin.com/in/naresh-khatri/",
-    instagram: "https://www.instagram.com/hotchaddi",
-    facebook: "https://www.facebook.com/HotChaddi/",
-    github: "https://github.com/Naresh-Khatri",
+    twitter: "https://x.com/",
+    linkedin: "https://www.linkedin.com/in/sammegh-jadhav-a1b5b8323/",
+    instagram: "https://www.instagram.com/sammegh_jadhav_2210/",
+    facebook: "https://www.facebook.com/",
+    github: "https://github.com/SammeghJadhav",
   },
 };
 export { config };

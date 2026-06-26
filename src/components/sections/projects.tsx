@@ -6,6 +6,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogTrigger,
 } from "../ui/responsive-dialog";
+import { DialogTitle } from "../ui/dialog";
 import { FloatingDock } from "../ui/floating-dock";
 import { ScrollArea } from "../ui/scroll-area";
 import Link from "next/link";
@@ -45,6 +46,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
               alt={project.title}
               width={300}
               height={300}
+              unoptimized
             />
             <div className="absolute w-full h-1/2 bottom-0 left-0 bg-gradient-to-t from-background via-background/85 to-transparent pointer-events-none">
               <div className="flex flex-col h-full items-start justify-end p-6">
@@ -62,9 +64,9 @@ const ProjectCard = ({ project }: { project: Project }) => {
           <div className="shrink-0 border-b border-border bg-background/80 backdrop-blur-sm px-8 py-5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4 min-w-0">
-                <h4 className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight truncate">
+                <DialogTitle className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight truncate">
                   {project.title}
-                </h4>
+                </DialogTitle>
                 <span className="shrink-0 text-[11px] uppercase tracking-widest text-muted-foreground border border-border rounded-full px-3 py-0.5">
                   {project.category}
                 </span>

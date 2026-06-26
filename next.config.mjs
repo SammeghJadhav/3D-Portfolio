@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true
-  },
+  // Force next-themes to be bundled into app code (not a lazy external chunk).
+  // This fixes the Turbopack "module factory not available" error.
+  transpilePackages: ['next-themes'],
   async headers() {
     return [
       {
@@ -23,12 +23,9 @@ const nextConfig = {
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
-      {
-        source: "/_next/static/(.*)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
+      // NOTE: Do NOT add a Cache-Control header for /_next/static in dev —
+      // it breaks Turbopack HMR by causing the browser to serve stale chunks.
+      // This rule should only be added in a production reverse-proxy/CDN layer.
     ];
   },
 };
