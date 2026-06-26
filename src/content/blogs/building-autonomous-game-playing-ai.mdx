@@ -1,0 +1,116 @@
+---
+title: "Building an AI That Teaches Itself to Beat Retro Games"
+publishedAt: "2026-06-26"
+summary: "An inside look into how I built and trained a reinforcement learning agent capable of playing and winning games autonomously."
+author: "Sammegh Jadhav"
+tags: ["AI", "Reinforcement Learning", "Neural Networks", "Gaming", "Python"]
+---
+
+# Building an AI That Teaches Itself to Beat Retro Games
+
+There is something hypnotic about watching a machine learn. 
+
+In my quest to master AI and automate everything possible, I decided to take on a classic challenge: building an AI capable of teaching itself to play and complete a game from scratch. No hardcoded rules, no cheat codes, and no human assistance. Just raw pixels, a neural network, and reinforcement learning.
+
+For this project, I chose to train an agent to play **Chrome's offline Dino Run game** first as a prototype, and then graduated to a customized, fast-paced **2D Endless Runner** built in Pygame.
+
+Here is exactly how I built it, how I broke it, and how the AI eventually learned to play better than I ever could.
+
+---
+
+## The Core Architecture: Deep Q-Learning (DQN)
+
+At its heart, the AI uses a **Deep Q-Network (DQN)**. The idea is simple: the agent looks at the current game screen (state), makes a choice (jump, duck, or do nothing), and receives a reward or penalty based on the outcome of that choice.
+
+Over thousands of attempts, the neural network learns to predict the expected future reward for each possible action and chooses the best one.
+
+### 1. Processing the State (Computer Vision)
+Instead of feeding the raw game code directly to the AI, I wanted the model to "see" the game just like a human does. 
+
+We capture the screen, convert it to grayscale, resize it to `84x84` pixels, and stack the last 4 consecutive frames together. This stack of 4 frames gives the model a sense of **motion and velocity** (so it knows if an obstacle is moving fast or slow).
+
+Here is a snippet of the preprocessing pipeline:
+
+```python
+import cv2
+import numpy as np
+
+def preprocess_frame(frame):
+    # Convert to grayscale and resize to 84x84
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    resized = cv2.resize(gray, (84, 84), interpolation=cv2.INTER_AREA)
+    return resized / 255.0  # Normalize pixel values
+```
+
+### 2. The Neural Network
+We feed the preprocessed frame stack into a Convolutional Neural Network (CNN) built in PyTorch. The CNN extracts visual features (like where the obstacles are relative to the player) and outputs a "Q-value" for each action.
+
+```python
+import torch
+import torch.nn as nn
+
+class DQN(nn.Module):
+    def __init__(self, h, w, outputs):
+        super(DQN, self).__init__()
+        self.conv1 = nn.Conv2d(4, 32, kernel_size=8, stride=4)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
+        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1)
+        
+        # Calculate linear input size
+        def conv2d_size_out(size, kernel_size=8, stride=4):
+            return (size - (kernel_size - 1) - 1) // stride  + 1
+        
+        convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w, 8, 4), 4, 2), 3, 1)
+        convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h, 8, 4), 4, 2), 3, 1)
+        linear_input_size = convw * convh * 64
+        
+        self.head = nn.Linear(linear_input_size, outputs)
+
+    def forward(self, x):
+        x = torch.relu(self.conv1(x))
+        x = torch.relu(self.conv2(x))
+        x = torch.relu(self.conv3(x))
+        return self.head(x.view(x.size(0), -1))
+```
+
+---
+
+## Shaping the Reward System (Where things got weird)
+
+An AI is only as good as its reward function. In early versions, my rewards were simple:
+*   **Survival**: `+1` point for every frame alive.
+*   **Crash**: `-100` points if it hits an obstacle.
+
+This led to a hilarious issue: the AI learned that the safest way to avoid crashing was to immediately jump, hit an obstacle, and end the game, because it hadn't learned that survival over time leads to *higher* rewards. It was lazy.
+
+To fix this, I redesigned the rewards:
+*   **Speed Bonus**: Awarding additional small points proportional to the game speed.
+*   **Proximity Penalty**: Deducting small rewards if the AI jumped unnecessarily when no obstacles were close, teaching it to be patient and time its moves.
+
+---
+
+## Training Phase: The Evolution of Intelligence
+
+Watching the training progression was like watching a child learn to walk:
+
+1.  **Episodes 1–100 (Pure Chaos)**: The AI does random actions. It jumps repeatedly, gets hit by the first obstacle, and dies.
+2.  **Episodes 200–500 (Basic Coordination)**: The AI learns that jumping right before an obstacle keeps it alive. It starts clearing single obstacles but gets completely destroyed by groups of obstacles.
+3.  **Episodes 800+ (Flow State)**: The AI is now dodging double obstacles, ducking under flying enemies, and successfully adapting to the increasing speed of the game.
+
+By **Episode 1500**, the AI reached a point where it could run indefinitely. It actually broke the score counter in my custom Pygame environment!
+
+---
+
+## Challenges Faced & Key Takeaways
+
+1.  **Exploration vs. Exploitation**: Using an epsilon-greedy strategy was crucial. If the AI doesn't explore enough random moves early on, it gets stuck in local minima (like doing nothing or jumping constantly).
+2.  **Frame Skipping**: Standard gameplay runs at 60 FPS, but the AI doesn't need to make decisions 60 times a second. Implementing frame skipping (making the AI take action once every 4 frames) dramatically sped up the training process.
+3.  **Catastrophic Forgetting**: Sometimes, as the network learns to handle high-speed obstacles, it forgets how to jump over slow obstacles at the start. Using a larger replay memory buffer helped stabilize this.
+
+## Next Steps
+
+Now that the 2D runner is solved, I'm aiming for something bigger. The next goal is to hook this AI system up to a retro emulator using **Gym Retro** to see if it can tackle more complex levels in *Super Mario Bros* or *Sonic the Hedgehog*.
+
+The code is fully open-sourced on my GitHub. Feel free to check out the repository, run the training script yourself, and watch the AI take over!
+
+*What game should I make the AI play next? Let me know in the comments or reach out!* 🎮
